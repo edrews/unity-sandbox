@@ -10,12 +10,7 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
     public Material playerMaterial;
 
     private static Color inactiveColor;
-
-    void Start()
-    {
-		addPhysicsRaycaster();
-        OnValidate();
-	}
+    private bool hoveredOver = false;
 
     void OnValidate()
     {
@@ -39,14 +34,22 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
 
 	void FixedUpdate()
     {
-        if (GameManager.instance.activeRod != this.transform)
+        updateRodColor();
+        if (IsActive())
         {
-            return;
+            updateRotation();
+            updateTranslation();
         }
+    }
 
+    void updateRotation()
+    {
         float rotation = Input.GetAxis("Horizontal") * Time.deltaTime * rotateSpeed;
         transform.Rotate(0, 0, rotation);
+    }
 
+    void updateTranslation()
+    {
         var sliding = -1 * Input.GetAxis("Vertical") * Time.deltaTime * slideSpeed;
         float target = transform.position.z + sliding;
         if (target > slideMax && sliding > 0)
@@ -63,13 +66,22 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
         }
     }
 
-    //Move to game controller?
-    void addPhysicsRaycaster()
+    void updateRodColor()
     {
-        PhysicsRaycaster physicsRaycaster = GameObject.FindObjectOfType<PhysicsRaycaster>();
-        if (physicsRaycaster == null)
+        if (hoveredOver)
         {
-            Camera.main.gameObject.AddComponent<PhysicsRaycaster>();
+            setColor(hoverColor);
+        }
+        else
+        {
+            if (IsActive())
+            {
+                setColor(activeColor);
+            }
+            else
+            {
+                setColor(inactiveColor);
+            }
         }
     }
 
@@ -85,19 +97,12 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
 	}
 	public void OnPointerEnter(PointerEventData eventData)
     {
-        setColor(hoverColor);
+        hoveredOver = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (IsActive())
-        {
-            setColor(activeColor);
-        }
-        else
-        {
-            setColor(inactiveColor);
-        }
+        hoveredOver = false;
 	}
 
     bool IsActive()
