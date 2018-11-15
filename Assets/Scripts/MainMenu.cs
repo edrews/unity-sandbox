@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour {
@@ -28,4 +29,19 @@ public class MainMenu : MonoBehaviour {
          Application.Quit();
      #endif
     }
+
+	void Update()
+	{
+		if (Input.GetButtonDown("Cancel"))
+		{
+			if (SceneManager.GetActiveScene().buildIndex == 1)
+			{
+				SceneManager.LoadScene(0);
+			}
+			else
+			{
+				ExitGame();
+			}
+		}
+	}
 }

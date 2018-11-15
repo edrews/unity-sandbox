@@ -1,26 +1,49 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPointerClickHandler {    
+public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandler, IPointerClickHandler
+{    
 	public Color hoverColor = Color.green;
 	public Color activeColor = Color.yellow;
-    public float rotateSpeed = 2000;
-    public float slideSpeed = 50;
-    public float slideMax = 5;
     public Material playerMaterial;
+    public Guys.GuyCount numberOfGuys = Guys.GuyCount.Two; 
 
+    private Guys guys;
+    private float rotateSpeed = 1000f;
+    private float slideSpeed = 50f;
+    private float slideMax = 4f;
     private static Color inactiveColor = Color.gray;
     private bool hoveredOver = false;
+    private string hInput = "Horizontal";
+    private string vInput = "Vertical";
 
     void OnValidate()
     {
-        foreach (Transform tr in transform)
+        switch (numberOfGuys)
         {
-            if (tr.tag == "Guy")
-            {
-                tr.GetComponent<Renderer>().sharedMaterial = playerMaterial;
-            }
+            case Guys.GuyCount.Two:
+                slideMax = 8.5f;
+                break;
+            case Guys.GuyCount.Three:
+                slideMax = 6.5f;
+                break;
+            case Guys.GuyCount.Five:
+                slideMax = 4.5f;
+                break;
+            default:
+                break;
         }
+        if (guys != null)
+        {
+            guys.SetMaterial(playerMaterial);
+            guys.SetCount(numberOfGuys);
+        }
+    }
+
+    public void SetInputs(string horizontal, string vertical)
+    {
+        hInput = horizontal;
+        vInput = vertical;
     }
 
 	void Update()
@@ -40,13 +63,13 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
 
     void updateRotation()
     {
-        float rotation = Input.GetAxis("Horizontal") * Time.deltaTime * rotateSpeed;
+        float rotation = Input.GetAxis(hInput) * Time.deltaTime * rotateSpeed;
         transform.Rotate(0, 0, rotation);
     }
 
     void updateTranslation()
     {
-        var sliding = -1 * Input.GetAxis("Vertical") * Time.deltaTime * slideSpeed;
+        var sliding = -1 * Input.GetAxis(vInput) * Time.deltaTime * slideSpeed;
         float target = transform.position.z + sliding;
         if (target > slideMax && sliding > 0)
         {
@@ -103,16 +126,16 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
 
     bool IsActive()
     {
-        if (this.transform != null)
+        if (transform != null && GameManager.instance != null)
         {
-            return GameManager.instance.activeRod == this.transform;
+            return GameManager.instance.IsActive(transform);
         }
         return false;
     }
 
 	public void OnPointerClick(PointerEventData eventData)
     {
-		GameManager.instance.activeRod = this.transform;
+		GameManager.instance.SetActiveRod(transform);
         setColor(activeColor);
 	}
 }
