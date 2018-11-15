@@ -9,8 +9,8 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
     public Guys.GuyCount numberOfGuys = Guys.GuyCount.Two; 
 
     private Guys guys;
-    private float rotateSpeed = 1000f;
-    private float slideSpeed = 50f;
+    private float rotateSpeed = 500f;
+    private float slideSpeed = 40f;
     private float slideMax = 4f;
     private static Color inactiveColor = Color.gray;
     private bool hoveredOver = false;

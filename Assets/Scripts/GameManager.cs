@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
 
 	public static GameManager instance = null;
 	public GameObject ballPrefab;
+	public GameObject firePrefab;
 	public GameObject playerOneRods;
 	public GameObject playerTwoRods;
 
@@ -21,7 +22,7 @@ public class GameManager : MonoBehaviour {
 	float ballInitialVelocity = 22f;
 	List<GameObject> balls;
 
-	const float LOWER_BOUND = -10f;
+	const float LOWER_BOUND = -30f;
 
 	void Awake()
 	{
@@ -39,7 +40,7 @@ public class GameManager : MonoBehaviour {
 					rod.SetInputs("P2_Horizontal", "P2_Vertical");
 				}
 			}
-			ResetGameState();
+			StartCoroutine(StartGame());
 		}
 		else if (instance != this)
 		{
@@ -47,9 +48,16 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator StartGame()
+	{
+		yield return new WaitForSeconds(0.5f);
+		ResetGameState();
+	}
+
 	public void AddBall(int number)
 	{
 		StartCoroutine(AddBallRoutine(number));
+
 	}
 
 	public IEnumerator AddBallRoutine(int number)
@@ -67,13 +75,18 @@ public class GameManager : MonoBehaviour {
         }
 	}
 
-	public void ResetGameState()
+	public void DestroyAllBalls()
 	{
 		foreach (var ball in balls)
 		{
-			Destroy(ball, 0.0f);
+			DestroyBall(ball);
 		}
 		balls.Clear();
+	}
+
+	public void ResetGameState()
+	{
+		DestroyAllBalls();
 		AddBall(1);
 		currentPlayerOneRods = playerOneRods;
 		SetActiveRod(currentPlayerOneRods.transform.GetChild(1)); //Midline
@@ -83,6 +96,13 @@ public class GameManager : MonoBehaviour {
 		{
 			SetActiveRod(playerTwoRods.transform.GetChild(1));
 		}
+	}
+
+	void DestroyBall(GameObject ball)
+	{
+		Destroy(ball, 0.5f);
+		GameObject fire = Instantiate(firePrefab, ball.transform.position, Quaternion.identity);
+		Destroy(fire, 3f);
 	}
 
 	void ResetChildRotation(Transform transform)
@@ -153,8 +173,8 @@ public class GameManager : MonoBehaviour {
 		HandleToggleTeam();
 		HandleLeftSelect();
 		HandleRightSelect();
-		//HandleQuit();
 		HandleOutOfBounds();
+
     }
 
 	void HandleOutOfBounds()
@@ -165,17 +185,13 @@ public class GameManager : MonoBehaviour {
 			if (ball.transform.position.y < LOWER_BOUND)
 			{
 				balls.RemoveAt(i);
-				Destroy(ball, 0.0f);
+				DestroyBall(ball);
+				if (balls.Count == 0)
+				{
+					ResetGameState();
+				}
 				return;
 			}			
-		}
-	}
-
-	void HandleQuit()
-	{
-		if (Input.GetButtonDown("Cancel"))
-		{
-			SceneManager.LoadScene(0);
 		}
 	}
 
@@ -195,6 +211,10 @@ public class GameManager : MonoBehaviour {
 			if (child == rod)
 			{
 				playerOneActiveRod = rod;
+				if (!Config.isTwoPlayer)
+				{
+					playerTwoActiveRod = null;
+				}
 				return;
 			}
 		}
@@ -203,6 +223,10 @@ public class GameManager : MonoBehaviour {
 			if (child == rod)
 			{
 				playerTwoActiveRod = rod;
+				if (!Config.isTwoPlayer)
+				{
+					playerOneActiveRod = null;
+				}
 				return;
 			}
 		}
@@ -272,7 +296,9 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator ResetGame()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1f);
+		DestroyAllBalls();
+		yield return new WaitForSeconds(1f);
 		ResetGameState();
 		gamePaused = false;
     }
