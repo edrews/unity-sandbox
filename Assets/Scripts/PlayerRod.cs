@@ -9,7 +9,7 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
     public float slideMax = 5;
     public Material playerMaterial;
 
-    private static Color inactiveColor;
+    private static Color inactiveColor = Color.gray;
     private bool hoveredOver = false;
 
     void OnValidate()
@@ -19,10 +19,6 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
             if (tr.tag == "Guy")
             {
                 tr.GetComponent<Renderer>().sharedMaterial = playerMaterial;
-            }
-            else if (tr.tag == "Rod")
-            {
-                inactiveColor = tr.GetComponent<Renderer>().sharedMaterial.color;
             }
         }
     }
@@ -107,7 +103,11 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
 
     bool IsActive()
     {
-        return GameManager.instance.activeRod == this.transform;
+        if (this.transform != null)
+        {
+            return GameManager.instance.activeRod == this.transform;
+        }
+        return false;
     }
 
 	public void OnPointerClick(PointerEventData eventData)
