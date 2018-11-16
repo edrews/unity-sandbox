@@ -2,23 +2,34 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class MainMenu : MonoBehaviour {
+public class MainMenu : MonoBehaviour, IOnComplete {
+
+	public CameraMover cameraMover;
+	public Canvas gameMenu;
+	public GameManager gameManager;
 
 	public void StartOnePlayer()
 	{
 		Config.isTwoPlayer = false;
-		SceneManager.LoadScene(1);
+		ShowGame();
 	}
 
 	public void StartTwoPlayer()
 	{
 		Config.isTwoPlayer = true;
-		SceneManager.LoadScene(1);
+		ShowGame();
 	}
 
 	public void ReturnToMenu()
 	{
-		SceneManager.LoadScene(0);
+		
+	}
+
+	public void EndGame()
+	{
+		gameMenu.enabled = false;
+		gameManager.DestroyAllBalls();
+		cameraMover.MoveToMenu(this, "ShowMenu");
 	}
 
 	public void ExitGame()
@@ -30,18 +41,30 @@ public class MainMenu : MonoBehaviour {
      #endif
     }
 
+	void ShowGame()
+	{
+		transform.GetComponent<Canvas>().enabled = false;
+		cameraMover.MoveToGame(this, "StartGame");
+	}
+
+	public void OnComplete(string action)
+	{
+		if (action == "StartGame")
+		{
+			gameMenu.enabled = true;
+			gameManager.StartGame();
+		}
+		else if (action == "ShowMenu")
+		{
+			transform.GetComponent<Canvas>().enabled = true;
+		}
+	}
+
 	void Update()
 	{
 		if (Input.GetButtonDown("Cancel"))
 		{
-			if (SceneManager.GetActiveScene().buildIndex == 1)
-			{
-				SceneManager.LoadScene(0);
-			}
-			else
-			{
-				ExitGame();
-			}
+			ExitGame();
 		}
 	}
 }

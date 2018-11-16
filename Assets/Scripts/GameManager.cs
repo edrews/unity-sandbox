@@ -40,7 +40,6 @@ public class GameManager : MonoBehaviour {
 					rod.SetInputs("P2_Horizontal", "P2_Vertical");
 				}
 			}
-			StartCoroutine(StartGame());
 		}
 		else if (instance != this)
 		{
@@ -48,7 +47,12 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator StartGame()
+	public void StartGame()
+	{
+		StartCoroutine(StartGameRoutine());
+	}
+
+	public IEnumerator StartGameRoutine()
 	{
 		yield return new WaitForSeconds(0.5f);
 		ResetGameState();
