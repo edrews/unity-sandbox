@@ -19,6 +19,16 @@ public class PlayerRod : MonoBehaviour, IPointerExitHandler, IPointerEnterHandle
 
     void OnValidate()
     {
+        SetupGuys();
+    }
+
+    void Start()
+    {
+        SetupGuys();
+    }
+
+    void SetupGuys()
+    {
         switch (numberOfGuys)
         {
             case Guys.GuyCount.Two:

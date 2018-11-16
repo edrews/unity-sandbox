@@ -134,6 +134,7 @@ public class GameManager : MonoBehaviour {
 	{
        if (Input.GetButtonDown("LeftSelect"))
         {
+			Debug.Log("LeftSelect");
 			if (currentPlayerOneRods == playerOneRods)
 			{
 				SelectLeftRod(ref playerOneActiveRod, currentPlayerOneRods);
@@ -145,6 +146,7 @@ public class GameManager : MonoBehaviour {
         }
 		if (Input.GetButtonDown("P2_LeftSelect") && Config.isTwoPlayer)
 		{
+			Debug.Log("P2_LeftSelect");
 			SelectRightRod(ref playerTwoActiveRod, playerTwoRods);
 		}
 	}
@@ -153,6 +155,7 @@ public class GameManager : MonoBehaviour {
 	{
         if (Input.GetButtonDown("RightSelect"))
         {
+			Debug.Log("RightSelect");
 			if (currentPlayerOneRods == playerOneRods)
 			{
 				SelectRightRod(ref playerOneActiveRod, currentPlayerOneRods);
@@ -164,6 +167,7 @@ public class GameManager : MonoBehaviour {
 		}
 		if (Input.GetButtonDown("P2_RightSelect") && Config.isTwoPlayer)
 		{
+			Debug.Log("P2_RightSelect");
 			SelectLeftRod(ref playerTwoActiveRod, playerTwoRods);
 		}
 	}
@@ -174,7 +178,6 @@ public class GameManager : MonoBehaviour {
 		HandleLeftSelect();
 		HandleRightSelect();
 		HandleOutOfBounds();
-
     }
 
 	void HandleOutOfBounds()
