@@ -28,7 +28,7 @@ public class MainMenu : MonoBehaviour, IOnComplete {
 	public void EndGame()
 	{
 		gameMenu.enabled = false;
-		gameManager.DestroyAllBalls();
+		gameManager.EndGame();
 		cameraMover.MoveToMenu(this, "ShowMenu");
 	}
 

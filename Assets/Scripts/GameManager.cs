@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
 	float maxRandomVelocity = 5f;
 	float ballInitialVelocity = 22f;
 	List<GameObject> balls;
+	bool isRunning = false;
 
 	const float LOWER_BOUND = -30f;
 
@@ -49,6 +50,7 @@ public class GameManager : MonoBehaviour {
 
 	public void StartGame()
 	{
+		isRunning = true;
 		StartCoroutine(StartGameRoutine());
 	}
 
@@ -61,7 +63,31 @@ public class GameManager : MonoBehaviour {
 	public void AddBall(int number)
 	{
 		StartCoroutine(AddBallRoutine(number));
+	}
 
+	public void EndGame()
+	{
+		isRunning = false;
+		DestroyAllBalls();
+		playerOneActiveRod = null;
+		playerTwoActiveRod = null;
+		GameObject.Find("BlueScore").GetComponent<Text>().text = "0";
+		GameObject.Find("RedScore").GetComponent<Text>().text = "0";
+		ResetRods();
+	}
+
+	public void ResetRods()
+	{
+		GameObject[] rodAssys = GameObject.FindGameObjectsWithTag("RodAssy");
+        foreach (GameObject rod in rodAssys)
+        {
+			var position = rod.transform.position;
+			position.z = 0;
+			rod.transform.position = position;
+			var rotation = rod.transform.rotation;
+			rotation.z = 0;
+			rod.transform.rotation = rotation;
+        }
 	}
 
 	public IEnumerator AddBallRoutine(int number)
@@ -104,7 +130,7 @@ public class GameManager : MonoBehaviour {
 
 	void DestroyBall(GameObject ball)
 	{
-		Destroy(ball, 0.5f);
+		Destroy(ball, 0.0f);
 		GameObject fire = Instantiate(firePrefab, ball.transform.position, Quaternion.identity);
 		Destroy(fire, 3f);
 	}
@@ -178,6 +204,7 @@ public class GameManager : MonoBehaviour {
 
 	void Update()
     {
+		if (!isRunning) return;
 		HandleToggleTeam();
 		HandleLeftSelect();
 		HandleRightSelect();
